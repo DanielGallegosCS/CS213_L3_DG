@@ -1,3 +1,5 @@
+//Daniel Gallegos
+
 import javax.swing.*;
 import java.util.Scanner;
 
