@@ -65,7 +65,37 @@ public class Main {
     }
 
     public static void seeDetails(Creature player1, Creature player2){
-        System.out.println(String.format(player1.toString(), player2.toString()));
+        //%starts a format specifier ,- left-justifies the text within the column
+        // #s allocates #= the number of characters for the string
+        // %n inserts a platform-independent newline.
+        String headerFormat = "| %-5s | %-5s | %-5s | %-5s | %-5s |%n";
+        String rowFormat = "| %-5s | %-7s | %-10s | %-7s | %-5s |%n";
+        System.out.println(String.format(headerFormat, "Name: ", "Type: ", "Strength: ", "Damage: ", "Health: "));
+        System.out.println(String.format(rowFormat, player1.getName(), player1.getType(), player1.getStrength()
+            , player1.getDamage(), player1.getHealth()));
+        System.out.println(String.format(rowFormat, player2.getName(), player2.getType(), player2.getStrength()
+            ,player2.getDamage(), player2.getHealth()));
+    }
+
+    public static void seeDetails(Creature player1, Creature player2, int round, int pick){
+        if(pick == 0) {
+            String headerFormat = "| %-5s | %-5s | %-5s | %-5s | %-5s | %-5s | %-5s |%n";
+            String rowFormat = "| %-5s | %-7s | %-10s | %-7s | %-5s | %-5s | %-5s |%n";
+            System.out.println(String.format(headerFormat, "Round ", " Who is attacking", "Name: ", "Type: ", "Strength: ", "Damage: ", "Health:"));
+            System.out.println(String.format(rowFormat, round, "attacking", player1.getName(), player1.getType(), player1.getStrength()
+                    , player1.getDamage(), player1.getHealth()));
+            System.out.println(String.format(rowFormat, round, "not attacking", player2.getName(), player2.getType(), player2.getStrength()
+                    , player2.getDamage(), player2.getHealth()));
+        } else if (pick == 1) {
+            String headerFormat = "| %-5s | %-5s | %-5s | %-5s | %-5s | %-5s | %-5s |%n";
+            String rowFormat = "| %-5s | %-7s | %-10s | %-7s | %-5s | %-5s | %-5s |%n";
+            System.out.println(String.format(headerFormat, "Round ", " Who is attacking", "Name: ", "Type: ", "Strength: ", "Damage: ", "Health:"));
+            System.out.println(String.format(rowFormat, round, "not attacking", player1.getName(), player1.getType(), player1.getStrength()
+                    , player1.getDamage(), player1.getHealth()));
+            System.out.println(String.format(rowFormat, round, "attacking", player2.getName(), player2.getType(), player2.getStrength()
+                    , player2.getDamage(), player2.getHealth()));
+
+        }
     }
 
     public static void resetCreatures(){
@@ -86,12 +116,36 @@ public class Main {
         int pick  = chooseWhoAttacksFirst();
         if (pick == 0){
             System.out.println(player1.getName() +"Goes first");
+            pick = 0;
         } else{
             System.out.println(player2.getName() + "Goes first");
+            pick = 1;
         }
-        //rounds how should i implement
-        System.out.println("Round 1");
-        seeDetails(player1, player2);
+        int round = 1;
+        do{
+            System.out.println("Round: " + round );
+            seeDetails(player1, player2);
+            if(pick == 1){
+                System.out.println(player2.getName()+" attacks "+ player1.getName());
+                int health1 = player1.getHealth() - player2.getDamage();
+                player1.setHealth(health1);
+                seeDetails(player1, player2, round, pick);
+                pick = 0;
+            } else if (pick == 0) {
+                System.out.println(player1.getName()+" attacks "+ player2.getName());
+                int health2 = player2.getHealth() - player1.getDamage();
+                player2.setHealth(health2);
+                seeDetails(player1, player2, round, pick);
+                pick = 1;
+            }
+
+            round++;
+        }while(player1.getHealth() > 0 && player2.getHealth() > 0);
+        if(player1.getHealth() <= 0){
+            System.out.println(player2.getName()+ " the " + player2.getType()+ " defeats " + player1.getName() );
+        } else if (player2.getHealth() <= 0) {
+            System.out.println(player1.getName()+ " the " + player1.getType()+ " defeats " + player2.getName() );
+        }
 
     }
     
@@ -122,7 +176,7 @@ class Creature {
         this.health = 100;
         this.name = name;
         this.type = type;
-        this.damage = 0;
+        this.damage = 20;
         
     }
 
