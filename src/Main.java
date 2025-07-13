@@ -6,11 +6,16 @@ import java.util.Scanner;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
+    //Static fields in a class are called Class fields!!!
+    //Static Class Variables are not instance variables!!!
     static Creature player1;
+    //Class field
     static Creature player2;
+    //Static Methods in a class are called Class Methods
     public static void main(String[] args) {
         menu();
     }
+    // Class Method
     public static void menu(){
         Scanner input = new Scanner(System.in);
         System.out.println("Please choose one of the following:");
@@ -33,22 +38,23 @@ public class Main {
                 break;
                 // to play battle creatures
             case 3:
-                System.out.println("Not ready yet return back to menu");
+                System.out.println("Lets play battle Creatures!!!");
                 playGame(player1, player2);
                 menu();
                 break;
                 //to reset battle creatures
             case 4:
-                System.out.println("Not ready yet back to main menu");
                 resetCreatures();
                 System.out.println("Creatures have been reset");
                 System.out.println(player1.toString());
+                System.out.println(player2.toString());
                 System.out.println("returning to main menu");
                 menu();
                 break;
                 // quit program
             case 5:
-                System.out.println("Not ready yet back to main menu");
+                System.out.println("Exiting game");
+                System.exit(0);
                 break;
             default:
                 System.out.println("invalid selection back please choose again");
@@ -101,8 +107,9 @@ public class Main {
     }
 
     public static void resetCreatures(){
-        player1 = new Creature();
-        player2 = new Creature();
+        player1.setCreature(player1.getName(), player1.getType());
+        player2.setCreature(player2.getName(), player2.getType());
+        System.out.println("Creatures have been reset");
     }
 
     public static int chooseWhoAttacksFirst(){
@@ -112,25 +119,42 @@ public class Main {
         int pick = Math.random() < 0.5 ? one: two;
 
         return pick;
-    }
+    }// static method to play the game
     public static void playGame(Creature player1, Creature player2){
         System.out.println("Lets see who attacks first:");
+        // to see who will attack first call to static method choose WhoAttacksFirst() returns an int value
+        // randomly select which Creature attacks first
         int pick  = chooseWhoAttacksFirst();
+        // if pick == 0 then player1 goes first
         if (pick == 0){
             System.out.println(player1.getName() +"Goes first");
             pick = 0;
+            // else pick == 1 then player 2 goes first
         } else{
             System.out.println(player2.getName() + "Goes first");
             pick = 1;
         }
         int round = 1;
+        // use a do while loop to run the game... games ends when one of
+        // the players health becomes less then 0
+        // increment after each round
+
         do{
             System.out.println("Round: " + round );
+            //Print the details of both creatures before the battle in a table format
             seeDetails(player1, player2);
+            // if else conditionals to switch between players
+            // turn-based battle -creatureA attacks creature B,
+            // in the next round creature B attacks creature A.
             if(pick == 1){
                 System.out.println(player2.getName()+" attacks "+ player1.getName());
+                //the health of a defender is reduced by the amount of damage,
+                // an attacker has inflicted.
                 int health1 = player1.getHealth() - player2.getDamage();
                 player1.setHealth(health1);
+                //overloaded method call to seeDetails
+                // passing to extra arguments round and pick
+                // print details of both creatures after the battle in a table format
                 seeDetails(player1, player2, round, pick);
                 pick = 0;
             } else if (pick == 0) {
@@ -142,27 +166,41 @@ public class Main {
             }
 
             round++;
+            // The battle continues until one of the creatures health becomes equal to zero
+            //if one of the players health reaches 0 then exit while loop
         }while(player1.getHealth() > 0 && player2.getHealth() > 0);
+        // if else to see which players health went to 0
+        // Display winner defeats loser
         if(player1.getHealth() <= 0){
             System.out.println(player2.getName()+ " the " + player2.getType()+ " defeats " + player1.getName() );
         } else if (player2.getHealth() <= 0) {
             System.out.println(player1.getName()+ " the " + player1.getType()+ " defeats " + player2.getName() );
         }
+        resetCreatures();
+        System.out.println("if you would like to play again select 3 in the menu," +
+                " no need to create creatures again");
+        menu();
 
     }
-    
+
+    // when you use a static field or method you do not need to use an object
 
 }
 class Creature {
+    // NonStatic fields in a class are called instance variables
+    //
     private int strength;
+    // instance variables
     private int health;
+    // instance variables
     private String name;
     private int damage;
     private String type;
-
+    // A no parameter constructor
+    // default constructor
     public Creature(){
     }
-
+    // A 4 parameter constructor to set all member variables; call setCreature() function to avoid redundancy
     public Creature(int strength, int health, String name, String type){
         this.setStrength(strength);
         this.setHealth(health);
@@ -172,60 +210,68 @@ class Creature {
         setCreature(name, type);
 
     }
-    
+    // Mutator function
+    // setCreature function to set all member variables; health and strength cannot below zero
     public void setCreature(String name, String type){
         this.strength = 100;
         this.health = 100;
         this.name = name;
         this.type = type;
-        this.damage = 20;
+        this.damage = getDamage();
         
     }
 
-
+    //Accessor Method
     public int getStrength() {
         return strength;
     }
-
+    //Mutator Method or setters
     public void setStrength(int strength) {
         this.strength = strength;
     }
-
+    //Accessor Method or getters
     public int getHealth() {
         return health;
     }
-
+    //Mutator Method
     public void setHealth(int health) {
         this.health = health;
     }
-
+    //Accessor Method
     public String getName() {
         return name;
     }
-
+    //Mutator Method
     public void setName(String name) {
         this.name = name;
     }
 
+    //Accessor method
     public int getDamage() {
+        damage = (int)(Math.random()%getStrength() + 1);
         return damage;
     }
-
+    //Mutator Method
     public void setDamage(int damage) {
         this.damage = damage;
     }
-
+    //Mutator Method
     public void setType(String type){
         this.type= type;
     }
-
+    // Accessor methods
     public String getType(){
         return type;
     }
     @Override
+    // Non-static methods in a class are called instance methods
+    // instance method
     public String toString(){
             System.out.println(getName()+" "+ getType() + " " +getStrength()+ " " + getDamage() + " " + getHealth());
 
         return getName()+" "+ getType() + " " +getStrength()+ " " + getDamage() + " " + getHealth();
     }
+
+    //when you use a nonstatic field or method you must use an object
+
 }
