@@ -1,226 +1,70 @@
-
-//Daniel Gallegos
-
-import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import static java.nio.file.StandardOpenOption.*;
+
+//Daniel Gallegos
+// Main class: Entry point of the program with menu logic
 public class Main {
-    //Static fields in a class are called Class fields!!!
-    //Static Class Variables are not instance variables!!!
-    static Creature player1;
-    //Class field
-    static Creature player2;
-    //Static Methods in a class are called Class Methods
-    static Creature[] army1;
-    static Creature[] army2;
-
-    // create two class variables for the two armies
+    // Main method: Starts the program and displays the main menu
     public static void main(String[] args) {
-        menu();
+        try {
+
+            DisplayMainMenu();
+        } catch (InputMismatchException e) {
+            e.printStackTrace();
+        }
+
     }
-    // Class Method
-    public static void menu(){
+
+    // Displays the main menu and handles user input for menu selection
+    public static void DisplayMainMenu() {
+        System.out.println("Welcome To Army Battle:");
+        System.out.println("Please select one of the following options:");
+        System.out.println("Press 1 and enter to play:");
+        System.out.println("Press 0 and enter to exit:");
         Scanner input = new Scanner(System.in);
-        System.out.println("Please choose one of the following:");
-        //changing this from create creatures to how many creatures do you want in your army
-        // need to automate the creature creation.
-        //System.out.println("enter 1 to input the number of creatures in your army:");
-        System.out.println("enter 1 to create two creatures that will battle");
-        System.out.println("enter 2 to see detailed out of creatures");
-        System.out.println("enter 3 to play battle Creatures:");
-        System.out.println("enter 4 reset creatures to prepare for another round");
-        System.out.println("enter 5 to quit the program:");
-        System.out.println("enter 6 for testing area");
-        int choice = input.nextInt();
-        switch(choice){
-            case 1: player1 = createCreatures();
-                    player1.toString();
-                    player2 = createCreatures();
-                    player2.toString();
-                    menu();
-                break;
-                // to see the detailed information of creatures
-            case 2: seeDetails(player1, player2);
-                    menu();
-                break;
-                // to play battle creatures
-            case 3:
-                System.out.println("Lets play battle Creatures!!!");
-                playGame(player1, player2);
-                menu();
-                break;
-                //to reset battle creatures
-            case 4:
-                resetCreatures();
-                System.out.println("Creatures have been reset");
-                System.out.println(player1.toString());
-                System.out.println(player2.toString());
-                System.out.println("returning to main menu");
-                menu();
-                break;
-                // quit program
-            case 5:
-                System.out.println("Exiting game");
-                System.exit(0);
-                break;
-            case 6:
-               //System.out.println("testing area");
-                System.out.println("Please enter a number of creatures from 1-10");
-                var num = input.nextInt();
-                input.nextLine();
-                Army test = new Army(num, army1, army2);
-                break;
-            default:
-                System.out.println("invalid selection back please choose again");
-                menu();
-        }
-    }
+        if (input.hasNextInt()) {
+            int selection = input.nextInt();
+            input.nextLine();
 
-
-    public static Creature createCreatures(){
-        Scanner input = new Scanner(System.in);
-        System.out.println("After every entry please press the enter button");
-        System.out.println("please enter a enter name for the creature:");
-        var name = input.nextLine();
-        System.out.println("Please enter the type of creature for example: Elf");
-        var type = input.nextLine();
-        Creature player = new Creature(0, 0, name, type);
-        return player;
-    }
-
-    public static void seeDetails(Creature player1, Creature player2){
-        //%starts a format specifier ,- left-justifies the text within the column
-        // #s allocates #= the number of characters for the string
-        // %n inserts a platform-independent newline.
-        String headerFormat = "| %-5s | %-5s | %-5s | %-5s | %-5s |%n";
-        String rowFormat = "| %-5s | %-7s | %-10s | %-7s | %-5s |%n";
-        System.out.println(String.format(headerFormat, "Name: ", "Type: ", "Strength: ", "Damage: ", "Health: "));
-        System.out.println(String.format(rowFormat, player1.getName(), player1.getType(), player1.getStrength()
-            , player1.getDamage(), player1.getHealth()));
-        System.out.println(String.format(rowFormat, player2.getName(), player2.getType(), player2.getStrength()
-            ,player2.getDamage(), player2.getHealth()));
-    }
-
-    public static void seeDetails(Creature player1, Creature player2, int round, int pick){
-        if(pick == 0) {
-            String headerFormat = "| %-5s | %-5s | %-5s | %-5s | %-5s | %-5s | %-5s |%n";
-            String rowFormat = "| %-5s | %-7s | %-10s | %-7s | %-5s | %-5s | %-5s |%n";
-            System.out.println(String.format(headerFormat, "Round ", " Who is attacking", "Name: ", "Type: ", "Strength: ", "Damage: ", "Health:"));
-            System.out.println(String.format(rowFormat, round, "attacking", player1.getName(), player1.getType(), player1.getStrength()
-                    , player1.getDamage(), player1.getHealth()));
-            System.out.println(String.format(rowFormat, round, "not attacking", player2.getName(), player2.getType(), player2.getStrength()
-                    , player2.getDamage(), player2.getHealth()));
-        } else if (pick == 1) {
-            String headerFormat = "| %-5s | %-5s | %-5s | %-5s | %-5s | %-5s | %-5s |%n";
-            String rowFormat = "| %-5s | %-7s | %-10s | %-7s | %-5s | %-5s | %-5s |%n";
-            System.out.println(String.format(headerFormat, "Round ", " Who is attacking", "Name: ", "Type: ", "Strength: ", "Damage: ", "Health:"));
-            System.out.println(String.format(rowFormat, round, "not attacking", player1.getName(), player1.getType(), player1.getStrength()
-                    , player1.getDamage(), player1.getHealth()));
-            System.out.println(String.format(rowFormat, round, "attacking", player2.getName(), player2.getType(), player2.getStrength()
-                    , player2.getDamage(), player2.getHealth()));
-
-        }
-    }
-
-    public static void resetCreatures(){
-        player1.setCreature(player1.getName(), player1.getType());
-        player2.setCreature(player2.getName(), player2.getType());
-        System.out.println("Creatures have been reset");
-    }
-
-    public static int chooseWhoAttacksFirst(){
-        int one = 0;
-        int two = 1;
-        // this expression is true approximately 50% of the time.
-        int pick = Math.random() < 0.5 ? one: two;
-
-        return pick;
-    }// static method to play the game
-    public static void playGame(Creature player1, Creature player2){
-        System.out.println("Lets see who attacks first:");
-        // to see who will attack first call to static method choose WhoAttacksFirst() returns an int value
-        // randomly select which Creature attacks first
-        int pick  = chooseWhoAttacksFirst();
-        // if pick == 0 then player1 goes first
-        if (pick == 0){
-            System.out.println(player1.getName() +"Goes first");
-            pick = 0;
-            // else pick == 1 then player 2 goes first
-        } else{
-            System.out.println(player2.getName() + "Goes first");
-            pick = 1;
-        }
-        int round = 1;
-        // use a do while loop to run the game... games ends when one of
-        // the players health becomes less then 0
-        // increment after each round
-
-        do{
-            System.out.println("Round: " + round );
-            //Print the details of both creatures before the battle in a table format
-            seeDetails(player1, player2);
-            // if else conditionals to switch between players
-            // turn-based battle -creatureA attacks creature B,
-            // in the next round creature B attacks creature A.
-            if(pick == 1){
-                System.out.println(player2.getName()+" attacks "+ player1.getName());
-                //the health of a defender is reduced by the amount of damage,
-                // an attacker has inflicted.
-                int health1 = player1.getHealth() - player2.getDamage();
-                player1.setHealth(health1);
-                //overloaded method call to seeDetails
-                // passing to extra arguments round and pick
-                // print details of both creatures after the battle in a table format
-                seeDetails(player1, player2, round, pick);
-                pick = 0;
-            } else if (pick == 0) {
-                System.out.println(player1.getName()+" attacks "+ player2.getName());
-                int health2 = player2.getHealth() - player1.getDamage();
-                player2.setHealth(health2);
-                seeDetails(player1, player2, round, pick);
-                pick = 1;
+            Choice choice = Choice.fromNum(selection);
+            Game play = new Game();
+            switch (choice) {
+                case Play:
+                    System.out.println("play something");
+                    play.playGame();
+                    break;
+                case Quit:
+                    System.out.println("quiting");
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid entry try again");
+                    DisplayMainMenu();
             }
-
-            round++;
-            // The battle continues until one of the creatures health becomes equal to zero
-            //if one of the players health reaches 0 then exit while loop
-        }while(player1.getHealth() > 0 && player2.getHealth() > 0);
-        // if else to see which players health went to 0
-        // Display winner defeats loser
-        if(player1.getHealth() <= 0){
-            System.out.println(player2.getName()+ " the " + player2.getType()+ " defeats " + player1.getName() );
-        } else if (player2.getHealth() <= 0) {
-            System.out.println(player1.getName()+ " the " + player1.getType()+ " defeats " + player2.getName() );
+        } else {
+            System.out.println("Invalid input. Please enter a number");
+            input.nextLine();
+            DisplayMainMenu();
         }
-        resetCreatures();
-        System.out.println("if you would like to play again select 3 in the menu," +
-                " no need to create creatures again");
-        menu();
-
     }
-
-    // when you use a static field or method you do not need to use an object
-
 }
+// Creature class: Represents a creature with attributes like strength, health, name, and type
 class Creature {
     // NonStatic fields in a class are called instance variables
     //
     private int strength;
-    // instance variables
     private int health;
-    // instance variables
     private String name;
-    private int damage;
+     private int damage;
     private String type;
-    // A no parameter constructor
-    // default constructor
-    // changed this on 7/13/2025
     public Creature(){
         setStrength(100);
         setHealth(100);
@@ -228,36 +72,31 @@ class Creature {
         setName("name");
         setCreature(getName(),getType());
     }
-    // A 4 parameter constructor to set all member variables; call setCreature() function to avoid redundancy
     public Creature(int strength, int health, String name, String type){
         this.setStrength(strength);
         this.setHealth(health);
         this.setName(name);
-        this.setDamage(damage);
         this.setType(type);
         setCreature(name, type);
 
     }
 
-    // added this constructor on 7/13
     public Creature(int strength, int health){
         this.setStrength(strength);
         this.setHealth(health);
         this.setName("name");
         this.setType("type");
-        this.setDamage(damage);
         setCreature(this.getName(), this.getType());
     }
 
     // Mutator function
-    // setCreature function to set all member variables; health and strength cannot below zero
     public void setCreature(String name, String type){
-        this.strength = 100;
-        this.health = 100;
+        this.strength = getStrength();
+        this.health = getHealth();
         this.name = name;
         this.type = type;
-        this.damage = getDamage();
-        
+        int damage = getDamage();
+
     }
 
     //Accessor Method
@@ -285,15 +124,15 @@ class Creature {
         this.name = name;
     }
 
-    //Accessor method
     public int getDamage() {
-        damage = (int)(Math.random()%getStrength() + 1);
+        int damage = (int)(Math.random()*10)%getStrength() + 1;
         return damage;
     }
-    //Mutator Method
-    public void setDamage(int damage) {
-        this.damage = damage;
+    public int getDamage(int inflickDamage) {
+        int damage = ((int)(Math.random()*10)%getStrength() + 1) + inflickDamage;
+        return damage;
     }
+//        Random rand = new Random();
     //Mutator Method
     public void setType(String type){
         this.type= type;
@@ -304,68 +143,264 @@ class Creature {
     }
     @Override
     // Non-static methods in a class are called instance methods
-    // instance method
     public String toString(){
-            System.out.println(getName()+" "+ getType() + " " +getStrength()+ " " + getDamage() + " " + getHealth());
+//        System.out.println(getName()+" "+ getType() + " " +getStrength()+ " " + getDamage() + " " + getHealth());
 
         return getName()+" "+ getType() + " " +getStrength()+ " " + getDamage() + " " + getHealth();
     }
 
-    //when you use a nonstatic field or method you must use an object
 
 }
 
-class Army{
+// Game class: Manages the gameplay logic including battles and game flow
+class Game{
 
-//Manages a group of 10 creatures should be able to change the number of creatures
-// members
-    // an array of 10 creature class objects can be less than 10 **
-    // the type of each creature should be randomly generated **
-    // load names from an input file **
-    // set the strength and health of each creature to random values between 40 -160 **
-    // make sure that min and max values of health and strength can be easily changed and require an update,
-    // in one place only.
-    // write all necessary constructors
-    // output each army's stats before and after each battle in a table format to the screen and a file
-    //text entries must be left aligned and numerical entries should be right aligned ( e.g., below, dots and bars are not required)
-    //output the total health of an army before and after the battle
-    // Army #1 Stats before the Battle
-    // Creature Type Strength | Health|
-    // Max..........|bahamut.........|.................96|...........107|
-    //add any member functions you see fit
-    //do not overwrite the output file on each battle, but append
-    // NonStatic fields in a class are called instance variables
 
-    private int numberOfCreatures;
-//        private Creature[] army1;
-//        private Creature[] army2;
-    //default constructor
-    public Army(){
+    public Creature[] getArmy1() {
+        return army1;
     }
 
-    public Army(int numberOfCreatures, Creature[] army1, Creature[] army2){
-        this.numberOfCreatures = numberOfCreatures;
-        army1 = new Creature[numberOfCreatures];
-        army2 = new Creature[numberOfCreatures];
-        //assignNamesAndTypes(army1, army2);
-        for(int i = 0; i < numberOfCreatures; i++){
-            //use default values so Creature object values are not null
+    public void setArmy1(Creature[] army1) {
+        this.army1 = army1;
+    }
+
+    public Creature[] getArmy2() {
+        return army2;
+    }
+
+    public void setArmy2(Creature[] army2) {
+        this.army2 = army2;
+    }
+
+    public Army getArmy() {
+        return army;
+    }
+
+    public void setArmy(Army army) {
+        this.army = army;
+    }
+
+    Creature[] army1;
+    Creature[] army2;
+    Army army = new Army();
+
+    public Game(){
+
+    }
+
+    // Starts a new game by initializing armies and triggering the battle
+    public void playGame(){
+    //        System.out.println("Please enter the size of the army up to 10:");
+    //        Scanner input = new Scanner(System.in);
+    //            System.out.println("invalid input");
+    //
+        int size = askArmySize();
+        army1 = new Creature[size];
+        army2 = new Creature[size];
+        for(int i = 0; i < size; i++){
             army1[i] = new Creature();
             army2[i] = new Creature();
         }
-        setArmy(army1, army2);
-// tested functions and passed make sure to remove before submitting
-//        for(int i = 0; i < numberOfCreatures; i++){
-//            System.out.println("this the name");
-//            System.out.println(army1[i].getName());
-//            System.out.println("this is the type");
-//            System.out.println(army1[i].getType());
-//            System.out.println("this is the strength");
-//            System.out.println(army1[i].getStrength());
-//        }
-        seeDetails(army1,army2,2,1);
+        army.setArmy(army1, army2);
+
+//            System.out.println("This is army1");
+//            System.out.println("Soldier #"+i+" "+army1[i].toString());
+//            System.out.println("This is army2");
+//            System.out.println("Soldier #"+i+" "+army2[i].toString());
+
+        battle(army1, army2);
+    }
+    // Starts a new game by initializing armies and triggering the battle
+    public void playGame(Creature[] army1, Creature[] army2){
+        //        System.out.println("Please enter the size of the army up to 10:");
+        //        Scanner input = new Scanner(System.in);
+        //            System.out.println("invalid input");
+        //
+//
+//            System.out.println("This is army1");
+//            System.out.println("Soldier #"+i+" "+army1[i].toString());
+//            System.out.println("This is army2");
+//            System.out.println("Soldier #"+i+" "+army2[i].toString());
+
+        battle(army1, army2);
+    }
+
+    // Prompts the user to enter the size of the army and validates input
+    public int askArmySize(){
+        int size = 0;
+        System.out.println("Please enter the size of the army up to 10:");
+        Scanner input = new Scanner(System.in);
+        if(input.hasNext()) {
+            size = input.nextInt();
+            input.nextLine();
+        } else{
+            System.out.println("invalid input");
+            input.nextLine();
+            playGame();
+
+        }
+        return size;
+    }
+    public void printStats(){
 
     }
+
+    // Handles the battle logic between two armies, including turn-based attacks
+    public void battle(Creature[] army1, Creature[] army2){
+        System.out.println("Lets see who attacks first:");
+        int pick  = chooseWhoAttacksFirst();
+        if (pick == 0){
+            System.out.println("army1" +"Goes first");
+            pick = 0;
+        } else{
+            System.out.println("army2" + "Goes first");
+            pick = 1;
+        }
+        int round = 1;
+//            Path file = Paths.get("/Users/dataisfun/IdeaProjects/Lab3SandBox/src/GameLog.txt");
+//            OutputStream output = new BufferedOutputStream(Files.newOutputStream(file, CREATE));
+//            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
+
+            do {
+                System.out.println("Round: " + round);
+                //Print the details of both creatures before the battle in a table format
+                //System.out.println("Each army details before the battle:");
+                System.out.println("The total health of army 1 is : " + army.totalHealth(army1));
+                System.out.println("The total health of army 2 is : " + army.totalHealth(army2));
+                System.out.println("Details before Battle round");
+                army.seeDetails(army1, army2, pick, round);
+                if (pick == 1) {
+                    System.out.println("Lets see if we have any damage mulitpliers for army 2");
+                    inflictsMoreDamage(army2);
+                    System.out.println("Thats great");
+                    System.out.println("Lets battle!!!");
+                    for (int i = 0; i < army1.length; i++) {
+                        System.out.println(army2[i].getName() + " attacks " + army1[i].getName());
+                        int health1 = army1[i].getHealth() - army1[i].getDamage();
+                        army1[i].setHealth(health1);
+                    }
+                    System.out.println("Details after battle round!!");
+                    army.seeDetails(army1, army2, round, pick);
+                    pick = 0;
+                } else {
+                    System.out.println("Lets see if we have any damage mulitpliers");
+                    inflictsMoreDamage(army1);
+                    System.out.println("awesome");
+                    System.out.println("Lets Battle!!");
+                    for (int i = 0; i < army2.length; i++) {
+                        System.out.println(army1[i].getName() + " attacks " + army2[i].getName());
+                        int health2 = army2[i].getHealth() - army1[i].getDamage();
+                        army2[i].setHealth(health2);
+                    }
+                    System.out.println("Details after battle round");
+                    army.seeDetails(army1, army2, round, pick);
+                    pick = 1;
+                }
+
+                round++;
+                // The battle continues until one of the creatures health becomes equal to zero
+            } while (checkHealth(army1) && checkHealth(army2));
+            // Display winner defeats loser
+            if (army.totalHealth(army1) < army.totalHealth(army2)) {
+                System.out.println("WINNER!!!!!!:");
+                System.out.println("army 2 the defeats army 1");
+            } else if (army.totalHealth(army2) < army.totalHealth(army1)) {
+                System.out.println("WINNER!!!!!!:");
+                System.out.println("army 1 the defeats army 2");
+                ;
+            }
+            //System.out.println("Message: " + e);
+            System.out.println("That really escalated quickly ");
+            System.out.println("Would you like to play again: please type yes or no");
+            Scanner input = new Scanner(System.in);
+            String answer = input.nextLine();
+
+        if(answer.equals("yes")){
+            army.resetArmy(army1, army2);
+            System.out.println("Armys have been reset for next game:");
+            playAgain(army1, army2);
+        } else{
+            System.out.println("Thank you for playing");
+            System.exit(0);
+        }
+
+    }
+    public void playAgain(Creature[] army1, Creature[] army2){
+        playGame(army1, army2);
+    }
+
+    // Applies special damage rules based on creature types
+    public void inflictsMoreDamage(Creature[] army){
+        for(Creature soldier: army){
+            if(soldier.getType().equals("Chimera")) {
+                if ((Math.random() % 100) < 10) {
+                    System.out.println("Bonus soldier type: "+soldier.getType()+" gets an extra 20 damage points");
+                    soldier.getDamage(20);
+                }
+            }else if(soldier.getType().equals("Nymph")) {
+                if(Math.random() % 100 < 10) {
+                    System.out.println("Bonus soldier type: " + soldier.getType() + " gets an extra 10 damage points");
+                    soldier.getDamage(10);
+                }
+
+
+            } else if (soldier.getType().equals("Sylph")) {
+                if((Math.random()) % 15 == 0) {
+                    System.out.println("Bonus soldier type: " + soldier.getType() + " gets an inflicts double the damage");
+                    soldier.getDamage((soldier.getDamage()));
+                }
+            }
+        }
+    }
+
+    // Randomly determines which army attacks first
+    public int chooseWhoAttacksFirst(){
+        int one = 0;
+        int two = 1;
+        int pick = Math.random() < 0.5 ? one: two;
+
+        return pick;
+    }
+
+    // Checks if all creatures in an army are still alive (health > 0)
+    public boolean checkHealth(Creature[] army){
+        boolean zero = true;
+        for(Creature soldier: army){
+            if(soldier.getHealth() <= 0){
+                zero = false;
+            }
+        }
+        return zero;
+    }
+
+
+}
+
+// Army class: Handles creation and management of armies and their creatures
+class Army{
+
+    public static final int MIN_STAT = 40;
+    public static final int MAX_STAT = 160;
+
+    public Creature[] getCreatures() {
+        return creatures;
+    }
+
+    public void setCreatures(Creature[] creatures) {
+        this.creatures = creatures;
+    }
+
+    private Creature[] creatures;
+
+    public Army(){
+
+    }
+
+    public void resetArmy(Creature[] army1, Creature[] army2){
+
+        setArmy(army1, army2);
+    }
+
 
     public void setArmy(Creature[] army1, Creature[] army2){
         assignNamesAndTypes(army1, army2);
@@ -382,6 +417,7 @@ class Army{
         pickCreatureType(army2);
     }
 
+    // Assigns names to creatures in an army from a file
     public void assignNames(Creature[] army, int team){
         try {
             if(team == 1) {
@@ -404,7 +440,9 @@ class Army{
         }
 
     }
+
     //The type of each creature should be randomly generated
+    // Randomly assigns creature types to each creature in the army
     public void pickCreatureType(Creature[] army) {
         String[] types = {"Pegasus",
                 "Siren",
@@ -428,54 +466,108 @@ class Army{
         Random rand = new Random();
         for (int i = 0; i < army.length; i++) {
             int pickName = rand.nextInt(types.length);
-            //set a different name for every creature in the army
             army[i].setType(types[pickName]);
         }
     }
-    //set the strength of each creature to random values between 40-160
+    // Randomly sets the strength of each creature in the army
     public void randomSetStrength(Creature[] army){
         Random rand = new Random();
+
         for(int i = 0; i < army.length; i++) {
-            int ranSetStrength = rand.nextInt(40,160);
-            //set a different name for every creature in the army
+            int ranSetStrength = rand.nextInt(MIN_STAT,MAX_STAT);
             army[i].setStrength(ranSetStrength);
         }
     }
-    //set the health of each creature to random values between 40-160
+    // Randomly sets the health of each creature in the army
     public void randomSetHealth(Creature[] army){
         Random rand = new Random();
         for(int i = 0; i < army.length; i++) {
-            int ranSetHealth = rand.nextInt(40,160);
-            //set a different name for every creature in the army
+            int ranSetHealth = rand.nextInt(MIN_STAT,MAX_STAT);
             army[i].setHealth(ranSetHealth);
         }
     }
-    public void seeDetails(Creature[] army1, Creature[] army2, int round, int pick){
-        if(pick == 0) {
 
+    // Calculates the total health of an army
+    public int totalHealth(Creature[] army){
+        int totalHealth = 0;
+        for(Creature soldier: army){
+            totalHealth += soldier.getHealth();
+        }
+
+      return totalHealth;
+    }
+
+    // Outputs detailed stats of both armies to the console and a log file
+    public void seeDetails(Creature[] army1, Creature[] army2, int round, int pick){
+        try {
+            Path file = Paths.get("/Users/dataisfun/IdeaProjects/CS213_L3_DG/src/GameLog.txt");
+            //OutputStream output = new BufferedOutputStream(Files.newOutputStream(file, CREATE_NEW));
+            OutputStream output = new BufferedOutputStream(Files.newOutputStream(file, APPEND));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
+            if (pick == 0) {
                 String headerFormat = "%-5s|%-25s|%-20s|%-20s|%-20s|%-20s|%-20s%n";
                 String rowFormat = "%5d|%-25s|%-20s|%-20s|%20d|%20d|%20d%n";
                 System.out.println(String.format(headerFormat, "Round", "Who is attacking", "Name: ", "Type:", "Strength:", "Damage:", "Health:"));
-            for(int i = 0; i < army1.length; i++) {
-                System.out.println(String.format(rowFormat, round, "army1 is attacking", army1[i].getName(), army1[i].getType(), army1[i].getStrength()
-                        , army1[i].getDamage(), army1[i].getHealth()));
-                System.out.println(String.format(rowFormat, round, "army2 is not attacking", army2[i].getName(), army2[i].getType(), army2[i].getStrength()
-                        , army2[i].getDamage(), army2[i].getHealth()));
+                writer.write(String.format(headerFormat, "Round", "Who is attacking", "Name: ", "Type:", "Strength:", "Damage:", "Health:"));
+                for (int i = 0; i < army1.length; i++) {
+                    System.out.println(String.format(rowFormat, round, "army1 is attacking", army1[i].getName(), army1[i].getType(), army1[i].getStrength()
+                            , army1[i].getDamage(), army1[i].getHealth()));
+                    writer.write(String.format(rowFormat, round, "army1 is attacking", army1[i].getName(), army1[i].getType(), army1[i].getStrength()
+                            , army1[i].getDamage(), army1[i].getHealth()));
+                    System.out.println(String.format(rowFormat, round, "army2 is not attacking", army2[i].getName(), army2[i].getType(), army2[i].getStrength()
+                            , army2[i].getDamage(), army2[i].getHealth()));
+                    writer.write(String.format(rowFormat, round, "army2 is not attacking", army2[i].getName(), army2[i].getType(), army2[i].getStrength()
+                            , army2[i].getDamage(), army2[i].getHealth()));
 
-            }
-        } else if (pick == 1) {
+                }
+            } else if (pick == 1) {
 
                 String headerFormat = "%-5s|%-25s|%-20s|%-20s|%-20s|%-20s|%-5s%n";
                 String rowFormat = "%5d|%-25s|%-20s|%-20s|%20d|%20d|%20d%n";
                 System.out.println(String.format(headerFormat, "Round", "Who is attacking", "Name:", "Type:", "Strength:", "Damage:", "Health:"));
-            for(int i =0; i < army1.length; i++) {
-                System.out.println(String.format(rowFormat, round, "army1 is not attacking", army1[i].getName(), army1[i].getType(), army1[i].getStrength()
-                        , army1[i].getDamage(), army1[i].getHealth()));
-                System.out.println(String.format(rowFormat, round, "army2 is attacking", army2[i].getName(), army2[i].getType(), army2[i].getStrength()
-                        , army2[i].getDamage(), army2[i].getHealth()));
+                writer.write(String.format(headerFormat, "Round", "Who is attacking", "Name:", "Type:", "Strength:", "Damage:", "Health:"));
+                for (int i = 0; i < army1.length; i++) {
+                    System.out.println(String.format(rowFormat, round, "army1 is not attacking", army1[i].getName(), army1[i].getType(), army1[i].getStrength()
+                            , army1[i].getDamage(), army1[i].getHealth()));
+                    writer.write(String.format(rowFormat, round, "army1 is not attacking", army1[i].getName(), army1[i].getType(), army1[i].getStrength()
+                            , army1[i].getDamage(), army1[i].getHealth()));
+                    System.out.println(String.format(rowFormat, round, "army2 is attacking", army2[i].getName(), army2[i].getType(), army2[i].getStrength()
+                            , army2[i].getDamage(), army2[i].getHealth()));
+                    writer.write(String.format(rowFormat, round, "army2 is attacking", army2[i].getName(), army2[i].getType(), army2[i].getStrength()
+                            , army2[i].getDamage(), army2[i].getHealth()));
+                }
             }
+            writer.close();
+        }catch(Exception e){
+            System.out.println("Message: " + e);
         }
     }
+
+}
+
+// Choice enum: Represents menu options for the game
+enum Choice {
+Play(1),
+Quit(0),
+DISPLAY(2);
+
+
+private final int num;
+
+Choice(int num) {
+    this.num = num;
+}
+
+public static Choice fromNum(int num) {
+    //Use a enhanced for loop to traverse through the choices
+    for (Choice c : Choice.values()) {
+        if (c.num == num) {
+            return c;
+        }
+    }
+    // For type checking had to create a DISPLAY enum to return a int value
+    return Choice.DISPLAY;
+}
 
 }
 
