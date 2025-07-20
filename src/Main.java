@@ -25,6 +25,7 @@ public class Main {
 
     // Displays the main menu and handles user input for menu selection
     public static void DisplayMainMenu() {
+        System.out.println("Lab#3 Armies Battle File IO Su25");
         System.out.println("Welcome To Army Battle:");
         System.out.println("Please select one of the following options:");
         System.out.println("Press 1 and enter to play:");
